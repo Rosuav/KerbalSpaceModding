@@ -15,3 +15,13 @@ Real project:
 Basics:
 - Compile using msc foo.cs
 - Run using mono foo.exe, but maybe not if dll
+
+
+Error:
+   HelloWorld.cs(10,35): error CS1070: The type `UnityEngine.MonoBehaviour' has been forwarded to an
+   assembly that is not referenced. Consider adding a reference to assembly `UnityEngine.CoreModule,
+   Version=0.0.0.0, Culture=neutral, PublicKeyToken=null'
+
+Solution: Add UnityEngine.CoreModule to list of references
+
+Great example: https://github.com/taraniselsu/TacExamples/blob/main/01-SimplePartlessPlugin/Source/SimplePartlessPlugin.cs
