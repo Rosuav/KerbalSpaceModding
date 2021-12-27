@@ -25,3 +25,6 @@ Error:
 Solution: Add UnityEngine.CoreModule to list of references
 
 Great example: https://github.com/taraniselsu/TacExamples/blob/main/01-SimplePartlessPlugin/Source/SimplePartlessPlugin.cs
+
+
+$ tail -F ~/.config/unity3d/Squad/Kerbal\ Space\ Program/Player.log | grep ArmstrongNav
