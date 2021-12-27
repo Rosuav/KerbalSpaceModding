@@ -1,5 +1,5 @@
-install: HelloWorld.dll
+install: ArmstrongNav.dll
 	cp *.dll ../.steam/steam/steamapps/common/Kerbal\ Space\ Program/GameData/Rosuav/Plugins/
 
-HelloWorld.dll: HelloWorld.cs
+ArmstrongNav.dll: ArmstrongNav.cs
 	./build.py $<
