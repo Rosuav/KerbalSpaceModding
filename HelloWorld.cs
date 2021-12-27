@@ -19,7 +19,12 @@ namespace Rosuav {
 			if ((Time.time - lastFixedUpdate) > 1.0f)
 			{
 				lastFixedUpdate = Time.time;
-				print("Hello, world, tick, tock");
+				Vessel self = FlightGlobals.ActiveVessel;
+				if (!self) {print("Hello, world, tick, tock"); return;}
+				print("Hello, vessel named " + self.vesselName + " " + self.latitude + " " + self.longitude);
+				FinePrint.Waypoint waypoint = self.navigationWaypoint;
+				if (waypoint == null) {print("Hello waypoint, nope no waypoint"); return;}
+				print("Hello waypoint: " + waypoint.name + " " + waypoint.latitude + " " + waypoint.longitude);
 			}
 		}
 	}
