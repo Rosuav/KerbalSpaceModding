@@ -35,7 +35,9 @@ namespace Rosuav {
 				double circle_dist = angle * surface.Radius;
 				print("ArmstrongNav self: " + lat1 + " - " + lat2 + " - " + longs);
 				print("ArmstrongNav angle: " + (angle * 180 / Math.PI));
-				print("ArmstrongNav great circle: " + circle_dist + " at " + srfvel + " = " + (circle_dist / srfvel));
+				//TODO: Add the estimated time to the current mission time and report estimated arrival time
+				print(String.Format("[ArmstrongNav] {0:0.00} deg or {1:0} m at {2:0.00} m/s = {3:0.00} sec",
+					angle * 180 / Math.PI, circle_dist, srfvel, circle_dist / srfvel));
 			}
 		}
 	}
