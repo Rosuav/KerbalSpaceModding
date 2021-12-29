@@ -1,30 +1,22 @@
 How hard can rocket modding be?!?
-- distance to nav mark
+=================================
 
-Hello World:
-- OnFundsChanged https://wiki.kerbalspaceprogram.com/wiki/API:GameEvents
-- onGamePause
-- onTimeWarpRateChanged
+When you are navigating to a "below X meters" destination by flying horizontally,
+it's easy enough to aim yourself, but much harder to estimate the time to your
+target. This mod attempts to calculate this, with certain caveats:
 
-Real project:
-- https://wiki.kerbalspaceprogram.com/wiki/API:Vessel
-- mainBody to get CelestialBody
-- latitude, longitude
-- srf_velocity (3D vector)
+* The celestial body is assumed to be spherical
+* You are assumed to be traversing across the surface at your exact surface velocity
+* You are assumed to be moving directly towards the destination unerringly
+* Your velocity is assumed to be constant
 
-Basics:
-- Compile using msc foo.cs
-- Run using mono foo.exe, but maybe not if dll
+Within those assumptions, this will provide time-to-destination every second.
 
+Internal notes
+--------------
 
-Error:
-   HelloWorld.cs(10,35): error CS1070: The type `UnityEngine.MonoBehaviour' has been forwarded to an
-   assembly that is not referenced. Consider adding a reference to assembly `UnityEngine.CoreModule,
-   Version=0.0.0.0, Culture=neutral, PublicKeyToken=null'
-
-Solution: Add UnityEngine.CoreModule to list of references
+https://wiki.kerbalspaceprogram.com/wiki/API:Vessel
 
 Great example: https://github.com/taraniselsu/TacExamples/blob/main/01-SimplePartlessPlugin/Source/SimplePartlessPlugin.cs
-
 
 $ tail -F ~/.config/unity3d/Squad/Kerbal\ Space\ Program/Player.log | grep ArmstrongNav
