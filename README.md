@@ -20,3 +20,7 @@ https://wiki.kerbalspaceprogram.com/wiki/API:Vessel
 Great example: https://github.com/taraniselsu/TacExamples/blob/main/01-SimplePartlessPlugin/Source/SimplePartlessPlugin.cs
 
 $ tail -F ~/.config/unity3d/Squad/Kerbal\ Space\ Program/Player.log | grep ArmstrongNav
+
+
+TODO: Whenever a maneuver node is created or moved, cite its altitude. Will allow height prediction
+by just clicking on the path somewhere.
