@@ -33,7 +33,7 @@ namespace Rosuav {
 			FinePrint.WaypointManager mgr = FinePrint.WaypointManager.Instance();
 			print(String.Format("[ArmstrongNav] Manager dist {0:0.00} lateral {1:0.00}",
 				mgr.DistanceToVessel(waypoint), mgr.LateralDistanceToVessel(waypoint)));
-			double now = ??, nextorbit = now + self.orbit.period;
+			double now = Planetarium.GetUniversalTime(), nextorbit = now + self.orbit.period;
 			1) Take the five points 'now', 'nextorbit', and 1/4, 2/4, 3/4 interpolations
 			2) For each point, calculate its lateral distance to the waypoint
 			3) For each pair (now, 1/4), (1/4, 2/4), etc, calculate the sum of distances
