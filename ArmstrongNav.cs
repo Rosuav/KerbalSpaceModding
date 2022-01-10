@@ -29,6 +29,26 @@ namespace Rosuav {
 			//TODO: Add the estimated time to the current mission time and report estimated arrival time
 			print(String.Format("[ArmstrongNav] {0:0.00} deg or {1:0} m at {2:0.00} m/s = {3:0.00} sec - {4}",
 				angle * 180 / Math.PI, circle_dist, srfvel, circle_dist / srfvel, waypoint.name));
+			/*
+			FinePrint.WaypointManager mgr = FinePrint.WaypointManager.Instance();
+			print(String.Format("[ArmstrongNav] Manager dist {0:0.00} lateral {1:0.00}",
+				mgr.DistanceToVessel(waypoint), mgr.LateralDistanceToVessel(waypoint)));
+			double now = ??, nextorbit = now + self.orbit.period;
+			1) Take the five points 'now', 'nextorbit', and 1/4, 2/4, 3/4 interpolations
+			2) For each point, calculate its lateral distance to the waypoint
+			3) For each pair (now, 1/4), (1/4, 2/4), etc, calculate the sum of distances
+			4) Pick the lowest sum, and assign (t1, t2) = the two points (a quarter-orbit apart).
+			5) Iterate until t1 and t2 are sufficiently close together:
+			5a) Find point t3 = (t1+t2)/2
+			5b) Calculate lateral distance from t3 to the waypoint
+			5c) If it is higher than both t1 and t2, break, keep the lower distance of t1/t2, end
+			5d) Otherwise, if t1 distance < t2 distance, take t1,t2 = t1,t3, else take t1,t2 = t3,t2
+			6) Report the timestamp of closest lateral approach, and the altitude at which the vessel will be.
+			To find distance at a given UT:
+			1) Vector3d pos = self.orbit.getPositionAtUT(t)
+			2) Vector2d latlon = surface.GetLatitudeAndLongitude(pos);
+			3) Either use mgr or the great circle calculation as above
+			*/
 		}
 		void check_maneuver_nodes(PatchedConicSolver solver) {
 			if (solver.maneuverNodes.Count == 0) return;
