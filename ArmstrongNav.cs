@@ -14,6 +14,8 @@ namespace Rosuav {
 			last_update = Time.time;
 			Vessel self = FlightGlobals.ActiveVessel;
 			if (!self) return;
+			PatchedConicSolver solver = self.patchedConicSolver;
+			if (solver) check_maneuver_nodes(solver);
 			FinePrint.Waypoint waypoint = self.navigationWaypoint;
 			CelestialBody surface = self.mainBody;
 			if (waypoint == null || surface == null) return;
@@ -27,6 +29,15 @@ namespace Rosuav {
 			//TODO: Add the estimated time to the current mission time and report estimated arrival time
 			print(String.Format("[ArmstrongNav] {0:0.00} deg or {1:0} m at {2:0.00} m/s = {3:0.00} sec - {4}",
 				angle * 180 / Math.PI, circle_dist, srfvel, circle_dist / srfvel, waypoint.name));
+		}
+		void check_maneuver_nodes(PatchedConicSolver solver) {
+			if (solver.maneuverNodes.Count == 0) return;
+			print(String.Format("[ArmstrongNav] Solver has {0} maneuver nodes", solver.maneuverNodes.Count));
+			ManeuverNode node = solver.maneuverNodes[0];
+			Vector3d pos = node.patch.getPositionAtUT(node.UT); //NOTE: The coordinates keep changing, not sure why.
+			print(String.Format("[ArmstrongNav] First node is at {0},{1},{2}", pos.x, pos.y, pos.z));
+			double altitude = FlightGlobals.getAltitudeAtPos(pos); //NOTE: This isn't perfectly stable, but it is generally within a fraction of a meter.
+			print(String.Format("[ArmstrongNav] Altitude {0}", altitude));
 		}
 	}
 }
