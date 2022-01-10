@@ -49,6 +49,9 @@ namespace Rosuav {
 			2) Vector2d latlon = surface.GetLatitudeAndLongitude(pos);
 			3) Either use mgr or the great circle calculation as above
 			*/
+			/* Writing to screen instead of to a log file:
+			https://www.kerbalspaceprogram.com/api/class_screen_message.html
+			*/
 		}
 		void check_maneuver_nodes(PatchedConicSolver solver) {
 			if (solver.maneuverNodes.Count == 0) return;
