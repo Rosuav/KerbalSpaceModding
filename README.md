@@ -21,6 +21,8 @@ Great example: https://github.com/taraniselsu/TacExamples/blob/main/01-SimplePar
 
 $ tail -F ~/.config/unity3d/Squad/Kerbal\ Space\ Program/Player.log | grep ArmstrongNav
 
+$ tail -F ~/.config/unity3d/Squad/Kerbal\ Space\ Program/Player.log | grep '\[ArmstrongNav\]'
+
 
 TODO: Whenever a maneuver node is created or moved, cite its altitude. Will allow height prediction
 by just clicking on the path somewhere.
