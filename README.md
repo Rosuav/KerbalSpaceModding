@@ -26,3 +26,16 @@ $ tail -F ~/.config/unity3d/Squad/Kerbal\ Space\ Program/Player.log | grep '\[Ar
 
 TODO: Whenever a maneuver node is created or moved, cite its altitude. Will allow height prediction
 by just clicking on the path somewhere.
+
+
+Velocimeter
+-----------
+
+Goal: Measure vessel velocity and display it in-game
+
+* Create a physicsless part with custom right-click info
+* Calculate (or query) vertical velocity and show it on the part
+* Calculate horizontal velocity (ground speed)
+* Get current height above ground, divide by VV, show "time to contact"
+* Optional: Depict a velociraptor on the part
+* Will be similar to a 2HOT Thermometer, but be sure to exclude all actual sciencing
