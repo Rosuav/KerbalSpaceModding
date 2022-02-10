@@ -7,18 +7,38 @@ using UnityEngine;
 
 namespace Rosuav {
 	public class VelocimeterModule : PartModule {
+		[KSPField(isPersistant = false, guiActive = true, guiName = "Horiz velo", guiFormat = "n/a", guiUnits = " m/s")]
+		public double horizontal_velocity = 0.0;
+		[KSPField(isPersistant = false, guiActive = true, guiName = "Descent velo", guiFormat = "n/a", guiUnits = " m/s")]
+		public double descent_velocity = 0.0;
+		[KSPField(isPersistant = false, guiActive = true, guiName = "Time to contact", guiFormat = "n/a", guiUnits = " sec")]
+		public double impact_time = 0.0;
+
 		void FixedUpdate()
 		{
-			//print("[Velocimeter] Hello world");
+			Vessel self = part.vessel;
+			if (!self) return;
+			//self.terrainNormal could be useful - would presumably show the angle of the ground under us
+			if (self.verticalSpeed < -1.0) { //Positive verticalSpeed means ascending
+				descent_velocity = -self.verticalSpeed;
+				Fields["descent_velocity"].guiFormat = "####";
+				impact_time = self.heightFromTerrain / -self.verticalSpeed;
+				if (impact_time >= 10.0) Fields["impact_time"].guiFormat = "####";
+				else Fields["impact_time"].guiFormat = "#.#";
+			}
+			else {
+				descent_velocity = impact_time = 0.0;
+				Fields["descent_velocity"].guiFormat = Fields["impact_time"].guiFormat = "n/a";
+			}
 		}
 
-		private int poke_count = 0;
+		[KSPField(isPersistant = false, guiActive = true, guiName = "Poke count")]
+		public int poke_count = 0;
 		[KSPEvent(guiActive = true, guiName = "Poke")]
 		public void PokeEvent()
 		{
 			++poke_count;
-			print(String.Format("[Velocimeter] Poked! {0} {1}", poke_count, part.vessel.GetName()));
-			Events["PokeEvent"].guiName = String.Format("Poked {0} times", poke_count);
 		}
+
 	}
 }
