@@ -31,14 +31,5 @@ namespace Rosuav {
 				Fields["descent_velocity"].guiFormat = Fields["impact_time"].guiFormat = "n/a";
 			}
 		}
-
-		[KSPField(isPersistant = false, guiActive = true, guiName = "Poke count")]
-		public int poke_count = 0;
-		[KSPEvent(guiActive = true, guiName = "Poke")]
-		public void PokeEvent()
-		{
-			++poke_count;
-		}
-
 	}
 }
