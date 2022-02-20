@@ -13,6 +13,7 @@ namespace Rosuav {
 		public double descent_velocity = 0.0;
 		[KSPField(isPersistant = false, guiActive = true, guiName = "Time to contact", guiFormat = "n/a", guiUnits = " sec")]
 		public double impact_time = 0.0;
+		//TODO: Also show the surface normal, or at least the magnitude of its dot product with vertical.
 
 		void FixedUpdate()
 		{
