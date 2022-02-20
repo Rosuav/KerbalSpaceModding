@@ -1,6 +1,6 @@
-install: ArmstrongNav.dll VelocimeterModule.dll velocimeter.cfg
+install: ArmstrongNav.dll VelocimeterModule.dll velocimeter.cfg velocimeter.png
 	cp *.dll ../.steam/steam/steamapps/common/Kerbal\ Space\ Program/GameData/Rosuav/Plugins/
-	cp *.cfg ../.steam/steam/steamapps/common/Kerbal\ Space\ Program/GameData/Rosuav/Parts/Utility/
+	cp *.cfg *.png ../.steam/steam/steamapps/common/Kerbal\ Space\ Program/GameData/Rosuav/Parts/Utility/
 
 ArmstrongNav.dll: ArmstrongNav.cs
 	./build.py $<
