@@ -35,3 +35,4 @@ Guide your descent in the last phases.
 
 * TODO: Calculate horizontal velocity (ground speed)
 * TODO: Depict a velociraptor on the part (instead of having it look like a 2HOT)
+  - Needs a 128x128 image - have a PNG in repo. Probably have to convert to DDS to use.
