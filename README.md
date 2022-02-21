@@ -34,5 +34,8 @@ Velocimeter
 Guide your descent in the last phases.
 
 * TODO: Calculate horizontal velocity (ground speed)
-* TODO: Depict a velociraptor on the part (instead of having it look like a 2HOT)
-  - Needs a 128x128 image - have a PNG in repo. Probably have to convert to DDS to use.
+
+Depiction of velociraptor is taken from XKCD 135, made available under the terms of CC-BY-NC,
+original image found here: https://xkcd.com/135/
+
+![Velocimeter in use](VelocimeterScreenshot.png)
