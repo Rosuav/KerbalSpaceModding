@@ -7,3 +7,6 @@ ArmstrongNav.dll: ArmstrongNav.cs
 
 VelocimeterModule.dll: VelocimeterModule.cs
 	./build.py $<
+
+velocimeter.png: dinoart.pike
+	pike $< $@
