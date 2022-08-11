@@ -25,6 +25,9 @@ namespace Rosuav {
 		{
 			Vessel self = part.vessel;
 			if (!self) return;
+			//This assumes that our goal is to land immediately below us.
+			//TODO: If there's a nav marker set, use that as the goal instead, and show the
+			//distance to it and time to arrival.
 			//self.terrainNormal could be useful - would presumably show the angle of the ground under us
 			if (self.verticalSpeed < -1.0) { //Positive verticalSpeed means ascending
 				descent_velocity = -self.verticalSpeed;
