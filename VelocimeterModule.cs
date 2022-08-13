@@ -55,6 +55,7 @@ namespace Rosuav {
 					= Fields["arrival_time"].guiFormat = "n/a";
 			}
 			else {
+				Fields["destination_dist"].guiFormat = "####";
 				arrival_time = destination_dist / approach_velocity;
 				if (approach_velocity >= 10.0) Fields["approach_velocity"].guiFormat = "####";
 				else Fields["approach_velocity"].guiFormat = "#.#";
