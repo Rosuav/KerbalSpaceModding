@@ -96,7 +96,7 @@ namespace Rosuav {
 			if (!self) return;
 			Orbit orbit = self.orbit;
 			double now = Planetarium.GetUniversalTime();
-			double apsis = Math.Max(orbit.GetNextApoapsisTime(now), orbit.GetNextPeriapsisTime(now));
+			double apsis = Math.Min(orbit.GetNextApoapsisTime(now), orbit.GetNextPeriapsisTime(now));
 			double curvel = orbit.getOrbitalVelocityAtUT(apsis).magnitude;
 			//Calculate the velocity of a circular orbit at the given radius.
 			//Note that a "launch safety" semi-circularization could aim for an elliptical
