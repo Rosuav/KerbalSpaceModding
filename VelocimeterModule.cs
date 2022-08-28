@@ -107,21 +107,26 @@ namespace Rosuav {
 			if (here > there) {here = peri; there = apo;}
 			double velhere = orbit.getOrbitalVelocityAtUT(here).magnitude;
 			double velthere = orbit.getOrbitalVelocityAtUT(there).magnitude;
-			print(String.Format("[Circularize] Here {0:0.00} m/s There {1:0.00} m/s Now {2:0.00} m/s or {3:0.00} m/s",
-				velhere, velthere, orbit.getOrbitalSpeedAt(now),
-				orbit.vel.magnitude
+			print(String.Format("[Circularize] Here {0:0.00} m/s There {1:0.00} m/s Now {2:0.00} m/s",
+				velhere, velthere, orbit.vel.magnitude
+			));
+			//Calculate the velocity of a circular orbit at the given radius.
+			//Note that a "launch safety" semi-circularization could aim for an elliptical
+			//orbit with a periapsis of anything above atmosphere or the highest mountain,
+			//but for this simplified version, we simply aim for the altitude of the current
+			//apoapsis. You can always edit the node afterwards and weaken it to what you need.
+			CelestialBody body = orbit.referenceBody;
+			double rad = orbit.GetRadiusAtUT(here); //== orbital altitude plus the body's radius
+			double grav = body.GeeASL * 9.807;
+			double vel = Math.Sqrt(grav / rad) * body.Radius;
+			print(String.Format("[Circularize] Altitude will be {0:0.00} Grav {1:0.00} Radius {2:0.00}",
+				rad, grav, body.Radius
 			));
 			ManeuverNode node = self.patchedConicSolver.AddManeuverNode(here);
-			//I think this is doing what I ask for (creating a burn that would equalize the velocities),
-			//but that isn't what creates a circular orbit.
-			node.DeltaV = orbit.Prograde(here) * (velthere - velhere);
-			//So instead, let's just get the direction right.
-			node.DeltaV = orbit.Prograde(here) * (apo > peri ? -1 : 1);
-			//And possibly it should just be this?
-			node.DeltaV = new Vector3d(0, 0, (apo > peri ? -1 : 1));
+			node.DeltaV = new Vector3d(0, 0, vel - velhere);
 			vessel.patchedConicSolver.UpdateFlightPlan();
 			print(String.Format("[Circularize] Difference {0:0.00} m/s mag {1:0.00} m/s",
-				velthere - velhere,
+				vel - velhere,
 				node.DeltaV.magnitude
 			));
 		}
