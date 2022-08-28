@@ -86,5 +86,42 @@ namespace Rosuav {
 				biome = surface.BiomeMap.GetAtt(self.latitude * UtilMath.Deg2Rad, self.longitude * UtilMath.Deg2Rad).name;
 			}
 		}
+
+		[KSPEvent(guiActive = true, guiName = "Circularize", active = true)]
+		public void CreateCircularizationNode() {
+			print("[Circularize] Create circularization node!");
+			//1. Find the next apoapsis or periapsis.
+			//   Assume for now that there's enough time for the burn. If there isn't, the user will
+			//   have to choose to wait until after that point and then do the opposite circularization.
+			//2. Calculate the dV needed to circularize. For now, cheat and just get the direction right.
+			//   An apoapsis burn is prograde, a periapsis burn is retrograde. This may happen "for free"
+			//   if we just look at "velocity here" and "velocity on opposite of orbit".
+			//3. Create a maneuver node precisely at apo/periapsis, specifying the burn required.
+			Vessel self = part.vessel;
+			if (!self) return;
+			Orbit orbit = self.orbit;
+			double now = Planetarium.GetUniversalTime();
+			double apo = orbit.GetNextApoapsisTime(now);
+			double peri = orbit.GetNextPeriapsisTime(now);
+			double here = apo, there = peri;
+			if (here > there) {here = peri; there = apo;}
+			double velhere = orbit.getOrbitalVelocityAtUT(here).magnitude;
+			double velthere = orbit.getOrbitalVelocityAtUT(there).magnitude;
+			print(String.Format("[Circularize] Here {0:0.00} m/s There {1:0.00} m/s Now {2:0.00} m/s or {3:0.00} m/s",
+				velhere, velthere, orbit.getOrbitalSpeedAt(now),
+				orbit.vel.magnitude
+			));
+			ManeuverNode node = self.patchedConicSolver.AddManeuverNode(here);
+			//I think this is doing what I ask for (creating a burn that would equalize the velocities),
+			//but that isn't what creates a circular orbit.
+			node.DeltaV = orbit.Prograde(here) * (velthere - velhere);
+			//So instead, let's just get the direction right.
+			node.DeltaV = orbit.Prograde(here) * (apo > peri ? -1 : 1);
+			vessel.patchedConicSolver.UpdateFlightPlan();
+			print(String.Format("[Circularize] Difference {0:0.00} m/s mag {1:0.00} m/s",
+				velthere - velhere,
+				node.DeltaV.magnitude
+			));
+		}
 	}
 }
