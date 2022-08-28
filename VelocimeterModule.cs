@@ -89,46 +89,26 @@ namespace Rosuav {
 
 		[KSPEvent(guiActive = true, guiName = "Circularize", active = true)]
 		public void CreateCircularizationNode() {
-			print("[Circularize] Create circularization node!");
 			//1. Find the next apoapsis or periapsis.
-			//   Assume for now that there's enough time for the burn. If there isn't, the user will
-			//   have to choose to wait until after that point and then do the opposite circularization.
-			//2. Calculate the dV needed to circularize. For now, cheat and just get the direction right.
-			//   An apoapsis burn is prograde, a periapsis burn is retrograde. This may happen "for free"
-			//   if we just look at "velocity here" and "velocity on opposite of orbit".
+			//2. Calculate the dV needed to circularize.
 			//3. Create a maneuver node precisely at apo/periapsis, specifying the burn required.
 			Vessel self = part.vessel;
 			if (!self) return;
 			Orbit orbit = self.orbit;
 			double now = Planetarium.GetUniversalTime();
-			double apo = orbit.GetNextApoapsisTime(now);
-			double peri = orbit.GetNextPeriapsisTime(now);
-			double here = apo, there = peri;
-			if (here > there) {here = peri; there = apo;}
-			double velhere = orbit.getOrbitalVelocityAtUT(here).magnitude;
-			double velthere = orbit.getOrbitalVelocityAtUT(there).magnitude;
-			print(String.Format("[Circularize] Here {0:0.00} m/s There {1:0.00} m/s Now {2:0.00} m/s",
-				velhere, velthere, orbit.vel.magnitude
-			));
+			double apsis = Math.Max(orbit.GetNextApoapsisTime(now), orbit.GetNextPeriapsisTime(now));
+			double curvel = orbit.getOrbitalVelocityAtUT(apsis).magnitude;
 			//Calculate the velocity of a circular orbit at the given radius.
 			//Note that a "launch safety" semi-circularization could aim for an elliptical
 			//orbit with a periapsis of anything above atmosphere or the highest mountain,
 			//but for this simplified version, we simply aim for the altitude of the current
 			//apoapsis. You can always edit the node afterwards and weaken it to what you need.
 			CelestialBody body = orbit.referenceBody;
-			double rad = orbit.GetRadiusAtUT(here); //== orbital altitude plus the body's radius
-			double grav = body.GeeASL * 9.807;
-			double vel = Math.Sqrt(grav / rad) * body.Radius;
-			print(String.Format("[Circularize] Altitude will be {0:0.00} Grav {1:0.00} Radius {2:0.00}",
-				rad, grav, body.Radius
-			));
-			ManeuverNode node = self.patchedConicSolver.AddManeuverNode(here);
-			node.DeltaV = new Vector3d(0, 0, vel - velhere);
+			double rad = orbit.GetRadiusAtUT(apsis); //== orbital altitude plus the body's radius
+			double needvel = Math.Sqrt(9.807 * body.GeeASL / rad) * body.Radius;
+			ManeuverNode node = self.patchedConicSolver.AddManeuverNode(apsis);
+			node.DeltaV = new Vector3d(0, 0, needvel - curvel);
 			vessel.patchedConicSolver.UpdateFlightPlan();
-			print(String.Format("[Circularize] Difference {0:0.00} m/s mag {1:0.00} m/s",
-				vel - velhere,
-				node.DeltaV.magnitude
-			));
 		}
 	}
 }
