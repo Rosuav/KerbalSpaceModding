@@ -117,6 +117,8 @@ namespace Rosuav {
 			node.DeltaV = orbit.Prograde(here) * (velthere - velhere);
 			//So instead, let's just get the direction right.
 			node.DeltaV = orbit.Prograde(here) * (apo > peri ? -1 : 1);
+			//And possibly it should just be this?
+			node.DeltaV = new Vector3d(0, 0, (apo > peri ? -1 : 1));
 			vessel.patchedConicSolver.UpdateFlightPlan();
 			print(String.Format("[Circularize] Difference {0:0.00} m/s mag {1:0.00} m/s",
 				velthere - velhere,
