@@ -12,8 +12,6 @@ target. This mod attempts to calculate this, with certain caveats:
 
 Within those assumptions, this will provide time-to-destination every second.
 
-TODO: Have a quick way to make a circularization maneuver node?
-
 Internal notes
 --------------
 
