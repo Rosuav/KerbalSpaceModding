@@ -7,6 +7,8 @@ using UnityEngine;
 
 namespace Rosuav {
 	public class VelocimeterModule : PartModule {
+		[KSPField(isPersistant = false, guiActive = true, guiName = "Display mode")]
+		public string display_mode = "";
 		[KSPField(isPersistant = false, guiActive = true, guiName = "Destination dist", guiFormat = "n/a", guiUnits = " m")]
 		public double destination_dist = 0.0;
 		[KSPField(isPersistant = false, guiActive = true, guiName = "Approach speed", guiFormat = "n/a", guiUnits = " m/s")]
@@ -37,6 +39,7 @@ namespace Rosuav {
 				double angle = Math.Acos(Math.Sin(lat1) * Math.Sin(lat2) +
 					Math.Cos(lat1) * Math.Cos(lat2) * Math.Cos(longs));
 				destination_dist = angle * surface.Radius;
+				display_mode = "Navigation";
 			} else {
 				//No nav marker? Then our goal is to land immediately below us.
 				//Useful esp on places with no atmosphere, where you need to use
@@ -48,6 +51,7 @@ namespace Rosuav {
 					approach_velocity = -self.verticalSpeed;
 				}
 				else approach_velocity = 0.0;
+				display_mode = "Descent";
 			}
 			if (approach_velocity < 0.0) {
 				approach_velocity = destination_dist = arrival_time = 0.0;
