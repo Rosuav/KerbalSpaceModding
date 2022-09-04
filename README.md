@@ -27,6 +27,11 @@ $ tail -F ~/.config/unity3d/Squad/Kerbal\ Space\ Program/Player.log | grep '\[Ar
 TODO: Whenever a maneuver node is created or moved, cite its altitude. Will allow height prediction
 by just clicking on the path somewhere.
 
+TODO: If you're targeting another thing in orbit around same body, show phase-change-per-orbit, and
+also current phase angle (should agree with "Approach Info" tab) and a divmod - "3 orbits +10°".
+- Calculate target orbital period and yours. If your period is 10% longer than its, you will lose
+  36° each orbit. Use percentages of target orbit? Maybe?
+
 
 Velocimeter
 -----------
