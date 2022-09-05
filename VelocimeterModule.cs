@@ -31,7 +31,33 @@ namespace Rosuav {
 			//to it and time to arrival.
 			FinePrint.Waypoint waypoint = self.navigationWaypoint;
 			CelestialBody surface = self.mainBody;
-			if (waypoint != null && surface != null) {
+			ITargetable target = self.targetObject;
+			if (target != null) {
+				Orbit targorb = target.GetOrbit(), selforb = self.orbit;
+				if (targorb.referenceBody != selforb.referenceBody) {
+					//Can't really do much here.
+					approach_velocity = 0.0;
+					display_mode = "Target (too far)";
+				} else {
+					display_mode = "Target";
+					print(String.Format("[ArmstrongNav] Target: {0} You {1:0.00} It {2:0.00}",
+						target.GetDisplayName(),
+						selforb.period, targorb.period
+					));
+					//Show the current phase angle as "distance" that we are apart (negated -
+					//the distance we have to close is the opposite of our phase angle)
+					double now = Planetarium.GetUniversalTime();
+					destination_dist = (selforb.PhaseAngle(now) - targorb.PhaseAngle(now)) * 180 / Math.PI;
+					//"Velocity" is now measured in degrees per orbit and shows how much the
+					//destination distance will change each time we go around the planet.
+					approach_velocity = (selforb.period - targorb.period) / targorb.period * 360 % 360;
+					//Make the sign of the destination distance match that of approach velocity
+					if (approach_velocity < 0 && destination_dist > 0) destination_dist -= 360;
+					if (approach_velocity > 0 && destination_dist < 0) destination_dist += 360;
+					if (destination_dist < 0) {destination_dist = -destination_dist; approach_velocity = -approach_velocity;}
+				}
+			}
+			else if (waypoint != null && surface != null) {
 				approach_velocity = self.GetSrfVelocity().magnitude;
 				//Calculate great circle distance from lat/long and radius
 				double lat1 = self.latitude * Math.PI / 180, lat2 = waypoint.latitude * Math.PI / 180;
@@ -50,15 +76,27 @@ namespace Rosuav {
 				approach_velocity = -self.verticalSpeed; //Positive verticalSpeed means ascending
 				display_mode = "Descent";
 			}
-			if (approach_velocity < 1.0) { //Below 1 m/s, the calculations tend to just show noise.
+			if (display_mode == "Target") {
+				//Orbital approaches are measured angularly
+				Fields["destination_dist"].guiUnits = "°";
+				Fields["approach_velocity"].guiUnits = "°/orb";
+				Fields["arrival_time"].guiUnits = " orb";
+			} else {
+				//Direct approaches are measured linearly
+				Fields["destination_dist"].guiUnits = " m";
+				Fields["approach_velocity"].guiUnits = " m/sec";
+				Fields["arrival_time"].guiUnits = " sec";
+			}
+			if (display_mode != "Target" && approach_velocity < 1.0) { //Below 1 m/s, the calculations tend to just show noise.
 				approach_velocity = destination_dist = arrival_time = 0.0;
 				Fields["approach_velocity"].guiFormat = Fields["destination_dist"].guiFormat
 					= Fields["arrival_time"].guiFormat = "n/a";
 			}
 			else {
-				Fields["destination_dist"].guiFormat = "####";
 				arrival_time = destination_dist / approach_velocity;
-				if (approach_velocity >= 10.0) Fields["approach_velocity"].guiFormat = "####";
+				if (Math.Abs(destination_dist) >= 10.0) Fields["destination_dist"].guiFormat = "####"; //Dedup these?
+				else Fields["destination_dist"].guiFormat = "#.#";
+				if (Math.Abs(approach_velocity) >= 10.0) Fields["approach_velocity"].guiFormat = "####";
 				else Fields["approach_velocity"].guiFormat = "#.#";
 				if (arrival_time >= 10.0) Fields["arrival_time"].guiFormat = "####";
 				else Fields["arrival_time"].guiFormat = "#.#";
