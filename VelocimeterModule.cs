@@ -40,10 +40,6 @@ namespace Rosuav {
 					display_mode = "Target (too far)";
 				} else {
 					display_mode = "Target";
-					print(String.Format("[ArmstrongNav] Target: {0} You {1:0.00} It {2:0.00}",
-						target.GetDisplayName(),
-						selforb.period, targorb.period
-					));
 					//Show the current phase angle as "distance" that we are apart (negated -
 					//the distance we have to close is the opposite of our phase angle)
 					double now = Planetarium.GetUniversalTime();
@@ -81,11 +77,13 @@ namespace Rosuav {
 				Fields["destination_dist"].guiUnits = "°";
 				Fields["approach_velocity"].guiUnits = "°/orb";
 				Fields["arrival_time"].guiUnits = " orb";
+				Events["CreateNode"].guiName = "Plane Match";
 			} else {
 				//Direct approaches are measured linearly
 				Fields["destination_dist"].guiUnits = " m";
 				Fields["approach_velocity"].guiUnits = " m/sec";
 				Fields["arrival_time"].guiUnits = " sec";
+				Events["CreateNode"].guiName = "Circularize";
 			}
 			if (display_mode != "Target" && approach_velocity < 1.0) { //Below 1 m/s, the calculations tend to just show noise.
 				approach_velocity = destination_dist = arrival_time = 0.0;
@@ -127,12 +125,23 @@ namespace Rosuav {
 		}
 
 		[KSPEvent(guiActive = true, guiName = "Circularize", active = true)]
-		public void CreateCircularizationNode() {
+		public void CreateNode() {
 			//1. Find the next apoapsis or periapsis.
 			//2. Calculate the dV needed to circularize.
 			//3. Create a maneuver node precisely at apo/periapsis, specifying the burn required.
 			Vessel self = part.vessel;
 			if (!self) return;
+			ITargetable target = self.targetObject;
+			if (target != null) {
+				Orbit targorb = target.GetOrbit(), selforb = self.orbit;
+				if (targorb.referenceBody == selforb.referenceBody) {
+					//TODO: Find the next asc/desc node and create a
+					//burn that will match inclination.
+					double incl = selforb.GetRelativeInclination(targorb);
+					print(String.Format("[ArmstrongNav] Plane change {0:0.00}", incl));
+					return;
+				}
+			}
 			Orbit orbit = self.orbit;
 			double now = Planetarium.GetUniversalTime();
 			double apo = orbit.GetNextApoapsisTime(now);
