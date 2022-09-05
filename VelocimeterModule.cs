@@ -93,11 +93,11 @@ namespace Rosuav {
 			else {
 				arrival_time = destination_dist / approach_velocity;
 				if (Math.Abs(destination_dist) >= 10.0) Fields["destination_dist"].guiFormat = "####"; //Dedup these?
-				else Fields["destination_dist"].guiFormat = "#.#";
+				else Fields["destination_dist"].guiFormat = "0.0";
 				if (Math.Abs(approach_velocity) >= 10.0) Fields["approach_velocity"].guiFormat = "####";
-				else Fields["approach_velocity"].guiFormat = "#.#";
+				else Fields["approach_velocity"].guiFormat = "0.0";
 				if (arrival_time >= 10.0) Fields["arrival_time"].guiFormat = "####";
-				else Fields["arrival_time"].guiFormat = "#.#";
+				else Fields["arrival_time"].guiFormat = "0.0";
 			}
 			//Borrowing some ideas from MechJeb here
 			celestial_body_name = surface.name;
