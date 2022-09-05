@@ -66,12 +66,12 @@ namespace Rosuav {
 			//Borrowing some ideas from MechJeb here
 			celestial_body_name = surface.name;
 			if (self.landedAt != "") {
-				situation = "Landed!";
+				situation = "Landed";
 				biome = self.landedAt;
 			} else {
 				switch (vessel.situation) {
 					case Vessel.Situations.PRELAUNCH: situation = "Pre-launch"; break;
-					case Vessel.Situations.LANDED: situation = "Landed?"; break; //Different from having LandedAt?
+					case Vessel.Situations.LANDED: situation = "Landed"; break; //Different from having LandedAt?
 					case Vessel.Situations.SPLASHED: situation = "Splashed down"; break;
 					case Vessel.Situations.FLYING:
 						if (vessel.altitude < surface.scienceValues.flyingAltitudeThreshold)
