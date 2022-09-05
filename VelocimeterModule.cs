@@ -131,19 +131,35 @@ namespace Rosuav {
 			//3. Create a maneuver node precisely at apo/periapsis, specifying the burn required.
 			Vessel self = part.vessel;
 			if (!self) return;
+			Orbit orbit = self.orbit;
+			double now = Planetarium.GetUniversalTime();
 			ITargetable target = self.targetObject;
 			if (target != null) {
-				Orbit targorb = target.GetOrbit(), selforb = self.orbit;
-				if (targorb.referenceBody == selforb.referenceBody) {
-					//TODO: Find the next asc/desc node and create a
-					//burn that will match inclination.
-					double incl = selforb.GetRelativeInclination(targorb);
-					print(String.Format("[ArmstrongNav] Plane change {0:0.00}", incl));
+				Orbit targorb = target.GetOrbit();
+				if (targorb.referenceBody == orbit.referenceBody) {
+					//Plane match. Find the next asc/desc node and create a burn that will
+					//match inclination with the target. This should be equal to 2*v*sin(incl/2)
+					//where v is the orbital velocity at the node.
+					double incl = orbit.GetRelativeInclination(targorb);
+					double ta_asc = Orbit.AscendingNodeTrueAnomaly(orbit, targorb);
+					double ta_dsc = Orbit.DescendingNodeTrueAnomaly(orbit, targorb);
+					double node = orbit.GetDTforTrueAnomaly(ta_dsc, 0.0) + now;
+					double asc_node = orbit.GetDTforTrueAnomaly(ta_asc, 0.0) + now;
+					if (asc_node < node) {node = asc_node; incl = -incl;}
+					//node is the UT until the next node, at which we'll have to planeshift by
+					//incl degrees. This plane shift requires dV that depends on the velocity
+					//at that point on the orbit.
+					//NOTE: I'm assuming that the inclination will never exceed 180°, and thus
+					//that its sine will always be positive. Ergo, by negating the inclination
+					//above, we also negate the sine, and thus the burn, putting it the other
+					//direction.
+					double vel = orbit.getOrbitalVelocityAtUT(node).magnitude;
+					double shift = 2 * vel * Math.Sin(incl / 2 * Math.PI / 180);
+					self.patchedConicSolver.AddManeuverNode(node).DeltaV = new Vector3d(0, shift, 0);
+					vessel.patchedConicSolver.UpdateFlightPlan();
 					return;
 				}
 			}
-			Orbit orbit = self.orbit;
-			double now = Planetarium.GetUniversalTime();
 			double apo = orbit.GetNextApoapsisTime(now);
 			double peri = orbit.GetNextPeriapsisTime(now);
 			double apsis = peri;
@@ -153,13 +169,13 @@ namespace Rosuav {
 			//Calculate the velocity of a circular orbit at the given radius.
 			//Note that a "launch safety" semi-circularization could aim for an elliptical
 			//orbit with a periapsis of anything above atmosphere or the highest mountain,
+			//and a "flyby capture" one could aim for any apoapsis within the body's SOI,
 			//but for this simplified version, we simply aim for the altitude of the current
 			//apoapsis. You can always edit the node afterwards and weaken it to what you need.
 			CelestialBody body = orbit.referenceBody;
 			double rad = orbit.GetRadiusAtUT(apsis); //== orbital altitude plus the body's radius
 			double needvel = Math.Sqrt(9.807 * body.GeeASL / rad) * body.Radius;
-			ManeuverNode node = self.patchedConicSolver.AddManeuverNode(apsis);
-			node.DeltaV = new Vector3d(0, 0, needvel - curvel);
+			self.patchedConicSolver.AddManeuverNode(apsis).DeltaV = new Vector3d(0, 0, needvel - curvel);
 			vessel.patchedConicSolver.UpdateFlightPlan();
 		}
 	}
