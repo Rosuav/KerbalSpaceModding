@@ -46,14 +46,11 @@ namespace Rosuav {
 				//rockets to descend (rather than just popping a parachute and
 				//time-warping till you land). Track your descent rate.
 				//self.terrainNormal could be useful - would presumably show the angle of the ground under us
-				if (self.verticalSpeed < -1.0) { //Positive verticalSpeed means ascending
-					destination_dist = self.heightFromTerrain;
-					approach_velocity = -self.verticalSpeed;
-				}
-				else approach_velocity = 0.0;
+				destination_dist = self.heightFromTerrain;
+				approach_velocity = -self.verticalSpeed; //Positive verticalSpeed means ascending
 				display_mode = "Descent";
 			}
-			if (approach_velocity < 0.0) {
+			if (approach_velocity < 1.0) { //Below 1 m/s, the calculations tend to just show noise.
 				approach_velocity = destination_dist = arrival_time = 0.0;
 				Fields["approach_velocity"].guiFormat = Fields["destination_dist"].guiFormat
 					= Fields["arrival_time"].guiFormat = "n/a";
