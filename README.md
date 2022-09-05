@@ -28,6 +28,18 @@ TODO: Whenever a maneuver node is created or moved, cite its altitude. Will allo
 by just clicking on the path somewhere.
 
 
+TODO: Autothrust. Entirely stateless and deterministic.
+- If AT is active and there is no maneuver node, deactivate AT
+- If AT is active and any time warp is happening, deactivate AT
+- If AT is inactive and user clicks "Autothrust", activate AT and select mode "Wait"
+- If mode is "Wait" and throttle is active, select mode "Burn"
+- If mode is "Wait" and time to next maneuver is less than half than the burn time, activate throttle
+- If mode is "Burn" and remaining burn time in maneuver is zero, deactivate throttle and AT
+- If mode is "Burn" and maneuver node is more than X degrees away from us, deactivate throttle and AT
+  - Need a way to catch the "end" of the burn in some way. Maybe if node is more than half its original
+    burn time behind us??
+
+
 Velocimeter
 -----------
 
