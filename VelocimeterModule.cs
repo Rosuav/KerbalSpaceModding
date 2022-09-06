@@ -119,6 +119,7 @@ namespace Rosuav {
 				}
 				biome = surface.BiomeMap.GetAtt(self.latitude * UtilMath.Deg2Rad, self.longitude * UtilMath.Deg2Rad).name;
 			}
+			check_autothrust();
 		}
 
 		[KSPEvent(guiActive = true, guiName = "Circularize", active = true)]
@@ -174,6 +175,49 @@ namespace Rosuav {
 			double needvel = Math.Sqrt(9.807 * body.GeeASL / rad) * body.Radius;
 			self.patchedConicSolver.AddManeuverNode(apsis).DeltaV = new Vector3d(0, 0, needvel - curvel);
 			vessel.patchedConicSolver.UpdateFlightPlan();
+		}
+
+		enum AT {Idle, Wait, Burn}; AT AT_mode;
+		double autothrust_last_dv;
+		string[] AT_ModeDesc = {"AutoThrust: idle", "AutoThrust: wait", "AutoThrust: burn"};
+		[KSPEvent(guiActive = true, guiName = "AutoThrust: inactive", active = true)]
+		public void AutoThrust() {
+			AT_mode = AT_mode == AT.Idle ? AT.Wait : AT.Idle;
+			check_autothrust();
+		}
+		void check_autothrust() {
+			//Ideally this should be stateless, save for the mode selection.
+			//Currently we're also tracking the node's delta-V though.
+			Vessel self = part.vessel;
+			PatchedConicSolver solver = self.patchedConicSolver;
+			//Deactivation triggers happen even if we don't have full control.
+			//If you have no maneuver node, or if you activate time warp, AT deactivates.
+			if (solver.maneuverNodes.Count == 0) AT_mode = AT.Idle;
+			if (TimeWarp.CurrentRateIndex > 0) AT_mode = AT.Idle;
+			if (AT_mode == AT.Wait && self.CurrentControlLevel == Vessel.ControlLevel.FULL) {
+				//We have full control. Either it's manned (by a competent pilot - if
+				//the only pilot goes EVA, control level becomes NONE), or it has a
+				//probe core, electric charge, and a commlink to KSC (or possibly a
+				//drone control unit nearby - haven't checked). AutoThrust is active.
+
+				FlightCtrlState ctrl = self.ctrlState;
+				ManeuverNode node = solver.maneuverNodes[0];
+				//Start burning half way before the maneuver node
+				if (node.startBurnIn < 0.0 || ctrl.mainThrottle > 0.0) {AT_mode = AT.Burn; autothrust_last_dv = Double.PositiveInfinity;}
+			}
+			if (AT_mode == AT.Burn && self.CurrentControlLevel == Vessel.ControlLevel.FULL) {
+				FlightCtrlState ctrl = self.ctrlState;
+				ManeuverNode node = solver.maneuverNodes[0];
+				//double time = node.UT - Planetarium.GetUniversalTime(); //Time to *middle* of burn
+				//double halfburn = time - node.startBurnIn; //The burn begins half a burn before the node's specified time. Ergo it ends half a burn after.
+				//Calculating based on burn time doesn't seem to work though
+				double dv = node.GetPartialDv().magnitude;
+				//Once the delta-V for the burn starts going up instead of down, cut the engines.
+				if (dv > autothrust_last_dv) AT_mode = AT.Idle;
+				else ctrl.mainThrottle = 1.0f;
+				autothrust_last_dv = dv;
+			}
+			Events["AutoThrust"].guiName = AT_ModeDesc[(int)AT_mode];
 		}
 	}
 }
