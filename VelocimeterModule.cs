@@ -15,8 +15,6 @@ namespace Rosuav {
 		public double approach_velocity = 0.0;
 		[KSPField(isPersistant = false, guiActive = true, guiName = "Time to arrival", guiFormat = "n/a", guiUnits = " sec")]
 		public double arrival_time = 0.0;
-		[KSPField(isPersistant = false, guiActive = true, guiName = "Location")]
-		public string celestial_body_name = "";
 		[KSPField(isPersistant = false, guiActive = true, guiName = "Situation")]
 		public string situation = "";
 		[KSPField(isPersistant = false, guiActive = true, guiName = "Biome")]
@@ -100,7 +98,6 @@ namespace Rosuav {
 				else Fields["arrival_time"].guiFormat = "0.0";
 			}
 			//Borrowing some ideas from MechJeb here
-			celestial_body_name = surface.name;
 			if (self.landedAt != "") {
 				situation = "Landed";
 				biome = self.landedAt;
