@@ -213,7 +213,10 @@ namespace Rosuav {
 				//Calculating based on burn time doesn't seem to work though
 				double dv = node.GetPartialDv().magnitude;
 				//Once the delta-V for the burn starts going up instead of down, cut the engines.
-				if (dv > autothrust_last_dv) AT_mode = AT.Idle;
+				if (dv > autothrust_last_dv + 0.001) {
+					AT_mode = AT.Idle;
+					print(String.Format("[ArmstrongNav] dV increased {0:0.000} -> {1:0.000}", autothrust_last_dv, dv));
+				}
 				else ctrl.mainThrottle = 1.0f;
 				autothrust_last_dv = dv;
 			}
