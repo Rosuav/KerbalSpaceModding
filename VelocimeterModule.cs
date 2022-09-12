@@ -133,7 +133,6 @@ namespace Rosuav {
 				}
 				biome = surface.BiomeMap.GetAtt(self.latitude * UtilMath.Deg2Rad, self.longitude * UtilMath.Deg2Rad).name;
 			}
-			check_autothrust();
 		}
 
 		[KSPEvent(guiActive = true, guiName = "Circularize", active = true)]
@@ -191,24 +190,16 @@ namespace Rosuav {
 			vessel.patchedConicSolver.UpdateFlightPlan();
 		}
 
-		/* Bugs in AutoThrust:
-		1) Combined burns don't seem to activate. If you have a launch stage with
-		   a bit of dV left, and a vacuum stage after that, a burn that finishes
-		   the launch fuel and then completes circularization with the vacuum will
-		   simply fail to ignite.
-		2) Sometimes, activating the engine just fills the thrust in red (as if we
-		   have no fuel) and doesn't do anything else. Hitting Z manually still
-		   fires the engines normally. Seems to happen on nuclear stages.
-		*/
 		enum AT {Idle, Wait, Burn}; AT AT_mode;
 		double autothrust_last_dv;
-		string[] AT_ModeDesc = {"AutoThrust: idle", "AutoThrust: wait", "AutoThrust: burn"};
-		[KSPEvent(guiActive = true, guiName = "AutoThrust: inactive", active = true)]
+		[KSPEvent(guiActive = true, guiName = "AutoThrust: idle", active = true)]
 		public void AutoThrust() {
-			AT_mode = AT_mode == AT.Idle ? AT.Wait : AT.Idle;
-			check_autothrust();
+			if (AT_mode == AT.Idle) {
+				AT_mode = AT.Wait;
+				vessel.OnFlyByWire += new FlightInputCallback(burn); //Is it ever possible for this to add a duplicate?
+			} else AT_mode = AT.Idle;
 		}
-		void check_autothrust() {
+		void check_autothrust(FlightCtrlState ctrl) {
 			//Ideally this should be stateless, save for the mode selection.
 			//Currently we're also tracking the node's delta-V though.
 			Vessel self = part.vessel;
@@ -223,27 +214,33 @@ namespace Rosuav {
 				//probe core, electric charge, and a commlink to KSC (or possibly a
 				//drone control unit nearby - haven't checked). AutoThrust is active.
 
-				FlightCtrlState ctrl = self.ctrlState;
 				ManeuverNode node = solver.maneuverNodes[0];
-				//Start burning half way before the maneuver node
+				//If you manually raise the throttle, go into burn mode
 				if (node.startBurnIn < 0.0 || ctrl.mainThrottle > 0.0) {AT_mode = AT.Burn; autothrust_last_dv = Double.PositiveInfinity;}
+				else Events["AutoThrust"].guiName = String.Format("AutoThrust: wait {0:0.0}", node.startBurnIn);
 			}
 			if (AT_mode == AT.Burn && self.CurrentControlLevel == Vessel.ControlLevel.FULL) {
-				FlightCtrlState ctrl = self.ctrlState;
 				ManeuverNode node = solver.maneuverNodes[0];
-				//double time = node.UT - Planetarium.GetUniversalTime(); //Time to *middle* of burn
-				//double halfburn = time - node.startBurnIn; //The burn begins half a burn before the node's specified time. Ergo it ends half a burn after.
-				//Calculating based on burn time doesn't seem to work though
 				double dv = node.GetPartialDv().magnitude;
 				//Once the delta-V for the burn starts going up instead of down, cut the engines.
-				if (dv > autothrust_last_dv + 0.001) {
-					AT_mode = AT.Idle;
-					print(String.Format("[ArmstrongNav] dV increased {0:0.000} -> {1:0.000}", autothrust_last_dv, dv));
-				}
-				else ctrl.mainThrottle = 1.0f;
+				if (dv > autothrust_last_dv + 0.001) AT_mode = AT.Idle;
 				autothrust_last_dv = dv;
 			}
-			Events["AutoThrust"].guiName = AT_ModeDesc[(int)AT_mode];
+		}
+		void /* just want to watch the world*/ burn(FlightCtrlState ctrl) {
+			check_autothrust(ctrl);
+			switch (AT_mode) {
+				case AT.Idle:
+					vessel.OnFlyByWire -= new FlightInputCallback(burn); //Is this really right? Seems to work...
+					ctrl.mainThrottle = 0.0f;
+					Events["AutoThrust"].guiName = "AutoThrust: idle";
+					break;
+				case AT.Burn:
+					ctrl.mainThrottle = 1.0f;
+					Events["AutoThrust"].guiName = "AutoThrust: burn";
+					break;
+				case AT.Wait: ctrl.mainThrottle = 0.0f; break; //guiName is set inside check_autothrust here
+			}
 		}
 	}
 }
