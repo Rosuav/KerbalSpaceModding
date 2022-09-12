@@ -39,6 +39,3 @@ Depiction of velociraptor is taken from XKCD 135, made available under the terms
 original image found here: https://xkcd.com/135/
 
 ![Velocimeter in use](VelocimeterScreenshot.png)
-
-TODO: On start of flight, open Velocimeter's PartActionWindow. Govern this
-with a construction-time attribute that gets saved onto the part.

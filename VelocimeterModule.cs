@@ -7,6 +7,8 @@ using UnityEngine;
 
 namespace Rosuav {
 	public class VelocimeterModule : PartModule {
+		[KSPField(isPersistant = true, guiActiveEditor = true, guiName = "Auto-open on launch"), UI_Toggle(enabledText = "On", disabledText = "Off")]
+		public bool autoopen = false;
 		[KSPField(isPersistant = false, guiActive = true, guiName = "Display mode")]
 		public string display_mode = "";
 		[KSPField(isPersistant = false, guiActive = true, guiName = "Destination dist", guiFormat = "n/a", guiUnits = " m")]
@@ -21,10 +23,22 @@ namespace Rosuav {
 		public string biome = "";
 		//TODO: Also show the surface normal, or at least the magnitude of its dot product with vertical.
 
+		//Optionally open the PAW when the vessel launches. Note that attempting to
+		//directly open the PAW from inside OnStart has had nothing but issues of
+		//various kinds, and even doing it on the first FixedUpdate fails, so we
+		//wait until it's been a little while.
+		int countdown = 0;
+		public override void OnStart(StartState state) {
+			if ((state & StartState.PreLaunch) > 0 && autoopen) countdown = 32; //About a second's delay
+		}
+
 		void FixedUpdate()
 		{
 			Vessel self = part.vessel;
 			if (!self) return;
+			if (countdown > 0) {
+				if (--countdown == 0) UIPartActionController.Instance.SpawnPartActionWindow(part);
+			}
 			//If there's a nav marker set, that is our goal; show the distance
 			//to it and time to arrival.
 			FinePrint.Waypoint waypoint = self.navigationWaypoint;
