@@ -191,6 +191,15 @@ namespace Rosuav {
 			vessel.patchedConicSolver.UpdateFlightPlan();
 		}
 
+		/* Bugs in AutoThrust:
+		1) Combined burns don't seem to activate. If you have a launch stage with
+		   a bit of dV left, and a vacuum stage after that, a burn that finishes
+		   the launch fuel and then completes circularization with the vacuum will
+		   simply fail to ignite.
+		2) Sometimes, activating the engine just fills the thrust in red (as if we
+		   have no fuel) and doesn't do anything else. Hitting Z manually still
+		   fires the engines normally. Seems to happen on nuclear stages.
+		*/
 		enum AT {Idle, Wait, Burn}; AT AT_mode;
 		double autothrust_last_dv;
 		string[] AT_ModeDesc = {"AutoThrust: idle", "AutoThrust: wait", "AutoThrust: burn"};
