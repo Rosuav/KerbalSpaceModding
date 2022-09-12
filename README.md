@@ -31,9 +31,16 @@ by just clicking on the path somewhere.
 Velocimeter
 -----------
 
-Guide your descent in the last phases.
+A measurement tool designed to give the pilot several forms of assistance.
 
-* TODO: Calculate horizontal velocity (ground speed)
+* Guide your descent in the last phases. As you approach the terrain, just keep
+  the "Time to Arrival" and "Approach Speed" similar, and you'll gently land.
+* Calculate phase angle change per orbit
+* Automatic circularization of orbit or plane matching (by creating maneuver nodes)
+* Burn for a maneuver node at the perfect time, putting half the dV before and half
+  after the node time.
+
+TODO: Calculate horizontal velocity (ground speed)
 
 Depiction of velociraptor is taken from XKCD 135, made available under the terms of CC-BY-NC,
 original image found here: https://xkcd.com/135/
