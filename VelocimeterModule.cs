@@ -34,7 +34,22 @@ namespace Rosuav {
 			if ((state & StartState.PreLaunch) > 0 && autoopen) {
 				countdown = 32; //About a second's delay
 				if (mission_numbering) {
-					string name = String.Format("{0} {1}", part.vessel.vesselName, 5);
+					//Doesn't work. This would probably load correctly (although I
+					//haven't proven this), but it doesn't save back, presumably
+					//because the FlightStateCache is a cache, and not representative
+					//of the actual savefile.
+					print(String.Format("[ArmstrongNav] Searching config..."));
+					ConfigNode config = FlightDriver.FlightStateCache.config;
+					ConfigNode launches = config.GetNode("MissionLaunchCount")
+						?? config.AddNode("MissionLaunchCount");
+					print(String.Format("[ArmstrongNav] Node {0}", launches.name));
+					string cur = launches.GetValue(part.vessel.vesselName) ?? "0";
+					print(String.Format("[ArmstrongNav] This {0}", cur));
+					int idx = int.Parse(cur) + 1;
+					print(String.Format("[ArmstrongNav] Next {0}", idx));
+					launches.SetValue(part.vessel.vesselName, idx);
+					print(String.Format("[ArmstrongNav] Config done."));
+					string name = String.Format("{0} {1}", part.vessel.vesselName, idx);
 					if (Vessel.IsValidVesselName(name)) part.vessel.vesselName = name;
 					print(String.Format("[ArmstrongNav] LAUNCH {0} {1}", part.vessel.GetName(), part.vessel.GetDisplayName()));
 				}
