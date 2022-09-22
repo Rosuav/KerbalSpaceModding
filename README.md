@@ -39,6 +39,9 @@ A measurement tool designed to give the pilot several forms of assistance.
 * Automatic circularization of orbit or plane matching (by creating maneuver nodes)
 * Burn for a maneuver node at the perfect time, putting half the dV before and half
   after the node time.
+* For no particular reason, this also allows mission-based numbering of vessels. A
+  ship design is a mission family, so the first mission of the "For River" design
+  is the "For River 1", followed by the "For River 2", etc.
 
 TODO: Calculate horizontal velocity (ground speed)
 

@@ -9,6 +9,8 @@ namespace Rosuav {
 	public class VelocimeterModule : PartModule {
 		[KSPField(isPersistant = true, guiActiveEditor = true, guiName = "Auto-open on launch"), UI_Toggle(enabledText = "On", disabledText = "Off")]
 		public bool autoopen = false;
+		[KSPField(isPersistant = true, guiActiveEditor = true, guiName = "Mission numbering"), UI_Toggle(enabledText = "Active", disabledText = "Inactive")]
+		public bool mission_numbering = false;
 		[KSPField(isPersistant = false, guiActive = true, guiName = "Display mode")]
 		public string display_mode = "";
 		[KSPField(isPersistant = false, guiActive = true, guiName = "Destination dist", guiFormat = "n/a", guiUnits = " m")]
@@ -29,7 +31,14 @@ namespace Rosuav {
 		//wait until it's been a little while.
 		int countdown = 0;
 		public override void OnStart(StartState state) {
-			if ((state & StartState.PreLaunch) > 0 && autoopen) countdown = 32; //About a second's delay
+			if ((state & StartState.PreLaunch) > 0 && autoopen) {
+				countdown = 32; //About a second's delay
+				if (mission_numbering) {
+					string name = String.Format("{0} {1}", part.vessel.vesselName, 5);
+					if (Vessel.IsValidVesselName(name)) part.vessel.vesselName = name;
+					print(String.Format("[ArmstrongNav] LAUNCH {0} {1}", part.vessel.GetName(), part.vessel.GetDisplayName()));
+				}
+			}
 		}
 
 		void FixedUpdate()
