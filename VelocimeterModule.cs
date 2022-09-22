@@ -31,15 +31,31 @@ namespace Rosuav {
 		//wait until it's been a little while.
 		int countdown = 0;
 		public override void OnStart(StartState state) {
-			if ((state & StartState.PreLaunch) > 0 && autoopen) {
-				countdown = 32; //About a second's delay
+			if ((state & StartState.PreLaunch) > 0) {
+				if (autoopen) countdown = 32; //About a second's delay
 				if (mission_numbering) {
 					//Doesn't work. This would probably load correctly (although I
 					//haven't proven this), but it doesn't save back, presumably
 					//because the FlightStateCache is a cache, and not representative
 					//of the actual savefile.
-					print(String.Format("[ArmstrongNav] Searching config..."));
-					ConfigNode config = FlightDriver.FlightStateCache.config;
+					ProtoCrewMember frist = HighLogic.CurrentGame.CrewRoster[0];
+					print(String.Format("[ArmstrongNav] First crewmember: {0}", frist));
+					FlightLog jeb = frist.careerLog;
+					jeb.AddEntry("MissionNumbering", part.vessel.vesselName);
+					FlightLog.Entry[] entries = jeb.GetEntries("MissionNumbering");
+					int count = entries.Length;
+					print(String.Format("[ArmstrongNav] Total missions: {0}", count));
+					foreach (FlightLog.Entry entry in entries)
+						print(String.Format("[ArmstrongNav] Entry: {0} -- {1}", entry.type, entry.target));
+					foreach (string t in jeb.GetDistinctTargets())
+						print(String.Format("[ArmstrongNav] Target: {0}", t));
+					foreach (string t in jeb.GetDistinctTypes())
+						print(String.Format("[ArmstrongNav] Type: {0}", t));
+					foreach (FlightLog.Entry entry in jeb.GetEntries("MissionNumbering"))
+						print(String.Format("[ArmstrongNav] Mission: {0}", entry.target));
+					print(String.Format("[ArmstrongNav] Done missions"));
+					ConfigNode config = HighLogic.CurrentGame.config;
+					print(String.Format("[ArmstrongNav] Searching config... {0}", config.name));
 					ConfigNode launches = config.GetNode("MissionLaunchCount")
 						?? config.AddNode("MissionLaunchCount");
 					print(String.Format("[ArmstrongNav] Node {0}", launches.name));
