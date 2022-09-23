@@ -34,40 +34,30 @@ namespace Rosuav {
 			if ((state & StartState.PreLaunch) > 0) {
 				if (autoopen) countdown = 32; //About a second's delay
 				if (mission_numbering) {
-					//Doesn't work. This would probably load correctly (although I
-					//haven't proven this), but it doesn't save back, presumably
-					//because the FlightStateCache is a cache, and not representative
-					//of the actual savefile.
-					ProtoCrewMember frist = HighLogic.CurrentGame.CrewRoster[0];
-					print(String.Format("[ArmstrongNav] First crewmember: {0}", frist));
-					FlightLog jeb = frist.careerLog;
-					jeb.AddEntry("MissionNumbering", part.vessel.vesselName);
-					FlightLog.Entry[] entries = jeb.GetEntries("MissionNumbering");
-					int count = entries.Length;
-					print(String.Format("[ArmstrongNav] Total missions: {0}", count));
-					foreach (FlightLog.Entry entry in entries)
-						print(String.Format("[ArmstrongNav] Entry: {0} -- {1}", entry.type, entry.target));
-					foreach (string t in jeb.GetDistinctTargets())
-						print(String.Format("[ArmstrongNav] Target: {0}", t));
-					foreach (string t in jeb.GetDistinctTypes())
-						print(String.Format("[ArmstrongNav] Type: {0}", t));
-					foreach (FlightLog.Entry entry in jeb.GetEntries("MissionNumbering"))
-						print(String.Format("[ArmstrongNav] Mission: {0}", entry.target));
-					print(String.Format("[ArmstrongNav] Done missions"));
-					ConfigNode config = HighLogic.CurrentGame.config;
-					print(String.Format("[ArmstrongNav] Searching config... {0}", config.name));
-					ConfigNode launches = config.GetNode("MissionLaunchCount")
-						?? config.AddNode("MissionLaunchCount");
-					print(String.Format("[ArmstrongNav] Node {0}", launches.name));
-					string cur = launches.GetValue(part.vessel.vesselName) ?? "0";
-					print(String.Format("[ArmstrongNav] This {0}", cur));
-					int idx = int.Parse(cur) + 1;
-					print(String.Format("[ArmstrongNav] Next {0}", idx));
-					launches.SetValue(part.vessel.vesselName, idx);
-					print(String.Format("[ArmstrongNav] Config done."));
-					string name = String.Format("{0} {1}", part.vessel.vesselName, idx);
-					if (Vessel.IsValidVesselName(name)) part.vessel.vesselName = name;
-					print(String.Format("[ArmstrongNav] LAUNCH {0} {1}", part.vessel.GetName(), part.vessel.GetDisplayName()));
+					//Allow Jebediah Kerman to keep track of mission numbering for us.
+					//If he is dead, we record mission numbers on his tombstone - it
+					//still works.
+					string basename = part.vessel.vesselName;
+					//If the name ends with a digit, assume that we already gave this
+					//vessel a mission number. Resetting to launch keeps the name as it
+					//was during the flight. It may possibly be better to hold off the
+					//rename until some number of ticks later? Not sure.
+					if (basename != "" && !Char.IsDigit(basename[basename.Length - 1])) {
+						FlightLog jeb = HighLogic.CurrentGame.CrewRoster[0].careerLog;
+						jeb.AddEntry("MissionNumbering", basename);
+						//int count = jeb.GetEntries("MissionNumbering", basename).Length; //Nope, always zero.
+						//int count = jeb.GetEntries("MissionNumbering").Length; //Same problem.
+						//foreach (FlightLog.Entry entry in jeb) ; //Not iterable.
+						//So I guess we do this manually.
+						int count = 0;
+						for (int i = 0; i < jeb.Count; ++i) {
+							FlightLog.Entry entry = jeb[i];
+							if (entry.type == "MissionNumbering" && entry.target == basename) ++count;
+						}
+						string name = String.Format("{0} {1}", part.vessel.vesselName, count);
+						if (Vessel.IsValidVesselName(name)) part.vessel.vesselName = name;
+						//print(String.Format("[ArmstrongNav] LAUNCH {0} {1}", part.vessel.GetName(), part.vessel.GetDisplayName()));
+					}
 				}
 			}
 		}
