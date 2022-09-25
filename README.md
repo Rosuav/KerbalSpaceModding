@@ -49,10 +49,3 @@ Depiction of velociraptor is taken from XKCD 135, made available under the terms
 original image found here: https://xkcd.com/135/
 
 ![Velocimeter in use](VelocimeterScreenshot.png)
-
-
-Auto-rename vessels
-- Save a "mission count" with every ship design
-- On launch, rename "For River" (design name) to "For River I" (mission name)
-- Keep this in save file. If you revert to VAB, it should un-count the mission.
-- Govern with build-time flag on the Velocimeter, because convenience
