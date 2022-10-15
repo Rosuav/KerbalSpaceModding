@@ -36,8 +36,10 @@ namespace Rosuav {
 				if (mission_numbering) {
 					//Allow Jebediah Kerman to keep track of mission numbering for us.
 					//If he is dead, we record mission numbers on his tombstone - it
-					//still works.
-					string basename = part.vessel.vesselName;
+					//still works. Note: The career log assumes keywords. Spaces in
+					//the vessel name break it. It may be necessary to remove more
+					//characters, or possibly to invert this and take just alphas.
+					string basename = part.vessel.vesselName.Replace(" ", "");
 					//If the name ends with a digit, assume that we already gave this
 					//vessel a mission number. Resetting to launch keeps the name as it
 					//was during the flight. It may possibly be better to hold off the
