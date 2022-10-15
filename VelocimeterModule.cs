@@ -121,6 +121,9 @@ namespace Rosuav {
 				Fields["destination_dist"].guiUnits = "°";
 				Fields["approach_velocity"].guiUnits = "°/orb";
 				Fields["arrival_time"].guiUnits = " orb";
+				//TODO: Show the number of degrees that would be adjusted.
+				//It's not very useful to show "Plane Match" when you're so close that the
+				//ascending/descending nodes show 0.0°!
 				Events["CreateNode"].guiName = "Plane Match";
 			} else {
 				//Direct approaches are measured linearly
