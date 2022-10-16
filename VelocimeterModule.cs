@@ -121,10 +121,11 @@ namespace Rosuav {
 				Fields["destination_dist"].guiUnits = "°";
 				Fields["approach_velocity"].guiUnits = "°/orb";
 				Fields["arrival_time"].guiUnits = " orb";
-				//TODO: Show the number of degrees that would be adjusted.
 				//It's not very useful to show "Plane Match" when you're so close that the
-				//ascending/descending nodes show 0.0°!
-				Events["CreateNode"].guiName = "Plane Match";
+				//ascending/descending nodes show 0.0°, so indicate how far off you are.
+				Orbit targorb = target.GetOrbit();
+				double incl = self.orbit.GetRelativeInclination(targorb);
+				Events["CreateNode"].guiName = String.Format("Plane Match: {0:0.0}°", incl);
 			} else {
 				//Direct approaches are measured linearly
 				Fields["destination_dist"].guiUnits = " m";
