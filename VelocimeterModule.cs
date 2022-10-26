@@ -47,7 +47,7 @@ namespace Rosuav {
 					//vessel a mission number. Resetting to launch keeps the name as it
 					//was during the flight. It may possibly be better to hold off the
 					//rename until some number of ticks later? Not sure.
-					if (basename != "" && !Char.IsDigit(basename[basename.Length - 1])) {
+					if (basename != "" && !Char.IsDigit(part.vessel.vesselName[part.vessel.vesselName.Length - 1])) {
 						FlightLog jeb = HighLogic.CurrentGame.CrewRoster[0].careerLog;
 						jeb.AddEntry("MissionNumbering", basename);
 						//int count = jeb.GetEntries("MissionNumbering", basename).Length; //Nope, always zero.
