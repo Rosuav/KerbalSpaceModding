@@ -45,6 +45,11 @@ A measurement tool designed to give the pilot several forms of assistance.
 
 TODO: Calculate horizontal velocity (ground speed)
 
+TODO: Hide the Circularize button if the maneuver tool isn't unlocked. It's not
+functional anyway without that. Ditto Autothrust.
+
+TODO: Disable the Autothrust button or change its text when there's no node.
+
 Depiction of velociraptor is taken from XKCD 135, made available under the terms of CC-BY-NC,
 original image found here: https://xkcd.com/135/
 
