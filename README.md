@@ -50,6 +50,11 @@ functional anyway without that. Ditto Autothrust.
 
 TODO: Disable the Autothrust button or change its text when there's no node.
 
+TODO: Indicate orbital energy by showing getOrbitalSpeedAt(GetNextPeriapsisTime(now))
+
+TODO: When in atmosphere and apoapsis is above atmosphere, show time to departure
+using GetNextTimeOfRadius(now, planet_radius + atmosphere_height)
+
 Depiction of velociraptor is taken from XKCD 135, made available under the terms of CC-BY-NC,
 original image found here: https://xkcd.com/135/
 
