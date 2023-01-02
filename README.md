@@ -12,6 +12,8 @@ target. This mod attempts to calculate this, with certain caveats:
 
 Within those assumptions, this will provide time-to-destination every second.
 
+To install, download Velocimeter.zip and extract it into your Mods directory.
+
 Internal notes
 --------------
 
@@ -55,9 +57,6 @@ Doesn't seem to work, not sure why. I want something that goes monotonically dow
 when losing orbital energy (eg while coasting through atmo but descending, so your
 current velo will increase). Is it possible to start with the semi-major axis, and
 then figure out the delta-v needed to basically have no orbit?
-
-TODO: When in atmosphere and apoapsis is above atmosphere, show time to departure
-using GetNextTimeOfRadius(now, planet_radius + atmosphere_height)
 
 Depiction of velociraptor is taken from XKCD 135, made available under the terms of CC-BY-NC,
 original image found here: https://xkcd.com/135/
