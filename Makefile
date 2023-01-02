@@ -1,3 +1,5 @@
+all: install Velocimeter.zip
+
 install: VelocimeterModule.dll velocimeter.cfg velocimeter.png AddNodesToServiceBays.cfg
 	cp *.dll ../.steam/steam/steamapps/common/Kerbal\ Space\ Program/GameData/Rosuav/Plugins/
 	cp *.cfg *.png ../.steam/steam/steamapps/common/Kerbal\ Space\ Program/GameData/Rosuav/Parts/Utility/
@@ -10,3 +12,6 @@ VelocimeterModule.dll: VelocimeterModule.cs
 
 velocimeter.png: dinoart.pike
 	pike $< $@
+
+Velocimeter.zip: VelocimeterModule.dll velocimeter.cfg velocimeter.png
+	python3 makezip.py

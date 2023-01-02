@@ -51,6 +51,10 @@ functional anyway without that. Ditto Autothrust.
 TODO: Disable the Autothrust button or change its text when there's no node.
 
 TODO: Indicate orbital energy by showing getOrbitalSpeedAt(GetNextPeriapsisTime(now))
+Doesn't seem to work, not sure why. I want something that goes monotonically down
+when losing orbital energy (eg while coasting through atmo but descending, so your
+current velo will increase). Is it possible to start with the semi-major axis, and
+then figure out the delta-v needed to basically have no orbit?
 
 TODO: When in atmosphere and apoapsis is above atmosphere, show time to departure
 using GetNextTimeOfRadius(now, planet_radius + atmosphere_height)

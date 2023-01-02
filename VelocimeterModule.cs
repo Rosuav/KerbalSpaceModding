@@ -20,6 +20,8 @@ namespace Rosuav {
 		public double approach_velocity = 0.0;
 		[KSPField(isPersistant = false, guiActive = true, guiName = "Time to arrival", guiFormat = "n/a", guiUnits = " sec")]
 		public double arrival_time = 0.0;
+		[KSPField(isPersistant = false, guiActive = true, guiName = "Time to atmo", guiFormat = "n/a", guiUnits = " sec")]
+		public double atmosphere_time = 0.0;
 		[KSPField(isPersistant = false, guiActive = true, guiName = "Situation")]
 		public string situation = "";
 		[KSPField(isPersistant = false, guiActive = true, guiName = "Biome")]
@@ -150,6 +152,16 @@ namespace Rosuav {
 				if (arrival_time >= 10.0) Fields["arrival_time"].guiFormat = "####";
 				else Fields["arrival_time"].guiFormat = "0.0";
 			}
+			if (surface.atmosphere) {
+				double atmo = surface.Radius + surface.atmosphereDepth;
+				double now = Planetarium.GetUniversalTime();
+				double next = self.orbit.GetNextTimeOfRadius(now, atmo);
+				atmosphere_time = next - now;
+			}
+			else atmosphere_time = 0.0;
+			if (atmosphere_time >= 10.0) Fields["atmosphere_time"].guiFormat = "####";
+			else if (atmosphere_time > 0.0) Fields["atmosphere_time"].guiFormat = "0.0";
+			else Fields["atmosphere_time"].guiFormat = "n/a";
 			//Borrowing some ideas from MechJeb here
 			if (self.landedAt != "") {
 				situation = "Landed";
