@@ -84,7 +84,7 @@ namespace Rosuav {
 			if (target != null) {
 				Orbit targorb = target.GetOrbit(), selforb = self.orbit;
 				if (targorb.referenceBody != selforb.referenceBody) {
-					//Can't really do much here.
+					//Can't really do much here. Or can we look for an SOI change?
 					approach_velocity = 0.0;
 					display_mode = "Target (too far)";
 				} else {
