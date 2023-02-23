@@ -100,6 +100,26 @@ namespace Rosuav {
 					if (approach_velocity < 0 && destination_dist > 0) destination_dist -= 360;
 					if (approach_velocity > 0 && destination_dist < 0) destination_dist += 360;
 					if (destination_dist < 0) {destination_dist = -destination_dist; approach_velocity = -approach_velocity;}
+					//WIP: Show your periapsis or apoapsis and the altitude at the nearest point
+					//on the target orbit. Whichever is closer, or just trust to the SMA.
+					//Test orbit: 27e9 meters 0.5 ecc, target Eeloo
+					//Other test: 13e9 meters 0.05 ecc, target Eve, MNA 3.14
+					//If working with peri, don't add 180°, and use PeR instead of ApR
+					double self_apsis_long = (selforb.LAN + selforb.argumentOfPeriapsis + 180.0) % 360.0;
+					double self_radius = selforb.ApR;
+					string lbl = "apo";
+					if (selforb.semiMajorAxis > targorb.semiMajorAxis) {
+						self_apsis_long = (selforb.LAN + selforb.argumentOfPeriapsis) % 360.0;
+						self_radius = selforb.PeR;
+						lbl = "peri";
+					}
+					double targ_peri_long = targorb.LAN + targorb.argumentOfPeriapsis; //Never add 180° to this one
+					double targ_anomaly = (self_apsis_long - targ_peri_long + 720.0) % 360.0;
+					double targ_true_anom = targ_anomaly; //targorb.getTrueAnomaly(targ_anomaly); //?? Doesn't work
+					double targ_rad = targorb.RadiusAtTrueAnomaly(targ_true_anom);
+					/*print(String.Format("[ArmstrongNav] My {0} long {1:0.00} rad {2:0.00} Targ long {3:0.00} anom {4:0.00} rad {5:0.00} Delta {6:0.00}",
+						lbl, self_apsis_long, self_radius, targ_peri_long,
+						targ_true_anom, targ_rad, targ_rad - self_radius));*/
 				}
 			}
 			else if (waypoint != null && surface != null) {
