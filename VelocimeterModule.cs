@@ -8,7 +8,10 @@ using UnityEngine;
 
 namespace Rosuav {
 	public class VelocimeterModule : PartModule {
-		[KSPField(isPersistant = true, guiActiveEditor = true, guiName = "Auto-open on launch"), UI_Toggle(enabledText = "On", disabledText = "Off")]
+		//NOTE: This could potentially become annoying, auto-opening every time you switch to a vessel.
+		//But having the Auto-Open toggle available during flight (guiActive = true) is itself annoying,
+		//so for now, I've kept it editor-only despite having post-launch functionality.
+		[KSPField(isPersistant = true, guiActiveEditor = true, guiName = "Auto-open"), UI_Toggle(enabledText = "On", disabledText = "Off")]
 		public bool autoopen = false;
 		[KSPField(isPersistant = true, guiActiveEditor = true, guiName = "Mission numbering"), UI_Toggle(enabledText = "Active", disabledText = "Inactive")]
 		public bool mission_numbering = false;
@@ -28,14 +31,17 @@ namespace Rosuav {
 		public string biome = "";
 		//TODO: Also show the surface normal, or at least the magnitude of its dot product with vertical.
 
-		//Optionally open the PAW when the vessel launches. Note that attempting to
+		//Optionally open the PAW when the vessel loads in. Note that attempting to
 		//directly open the PAW from inside OnStart has had nothing but issues of
 		//various kinds, and even doing it on the first FixedUpdate fails, so we
 		//wait until it's been a little while.
 		int countdown = 0;
 		public override void OnStart(StartState state) {
-			if ((state & StartState.PreLaunch) > 0) {
-				if (autoopen) countdown = 32; //About a second's delay
+			//NOTE: The StartState enumeration mentions an "Editor" state, but I've never seen it
+			//actually trigger. It might be necessary to explicitly exclude this from the autoopen
+			//behaviour, but for now I haven't bothered.
+			if (autoopen) countdown = 32; //About a second's delay
+			if ((state & StartState.PreLaunch) > 0) { //Only add mission numbering on first launch (there's no way to enable it post-editor anyway)
 				if (mission_numbering) {
 					//Allow Jebediah Kerman to keep track of mission numbering for us.
 					//If he is dead, we record mission numbers on his tombstone - it
