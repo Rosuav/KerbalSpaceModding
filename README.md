@@ -52,11 +52,7 @@ functional anyway without that. Ditto Autothrust.
 
 TODO: Disable the Autothrust button or change its text when there's no node.
 
-TODO: Indicate orbital energy by showing getOrbitalSpeedAt(GetNextPeriapsisTime(now))
-Doesn't seem to work, not sure why. I want something that goes monotonically down
-when losing orbital energy (eg while coasting through atmo but descending, so your
-current velo will increase). Is it possible to start with the semi-major axis, and
-then figure out the delta-v needed to basically have no orbit?
+TODO: Autoopen PAW on vessel load (unpack?) not just on launch.
 
 Depiction of velociraptor is taken from XKCD 135, made available under the terms of CC-BY-NC,
 original image found here: https://xkcd.com/135/
