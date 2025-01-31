@@ -8,13 +8,13 @@ install2: VelociTwo.dll
 	cp VelociTwo.dll ../.steam/steam/steamapps/common/Kerbal\ Space\ Program\ 2/BepInEx/plugins/Rosuav/
 
 ArmstrongNav.dll: ArmstrongNav.cs
-	./build.py $<
+	monobuild.py $<
 
 VelocimeterModule.dll: VelocimeterModule.cs
-	./build.py $<
+	monobuild.py $<
 
 VelociTwo.dll: VelociTwo.cs
-	./build.py $<
+	monobuild.py $<
 
 velocimeter.png: dinoart.pike
 	pike $< $@
