@@ -1,9 +1,12 @@
-//> path: KSP2
+//> path: ~/.steam/steam/steamapps/common/Kerbal Space Program 2/KSP2_x64_Data/Managed
+//> path: ~/.steam/steam/steamapps/common/Kerbal Space Program 2/BepInEx/core
 //> -target:library
+//> import: BepInEx
 //> import: Assembly-CSharp
 //> import: UnityEngine
 //> import: UnityEngine.CoreModule
 //> import: UnityEngine.UI
+//> import: netstandard
 using BepInEx;
 
 namespace Rosuav {

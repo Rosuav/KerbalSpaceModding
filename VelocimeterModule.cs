@@ -1,3 +1,4 @@
+//> path: ~/.steam/steam/steamapps/common/Kerbal Space Program/KSP_Data/Managed
 //> -target:library
 //> import: Assembly-CSharp
 //> import: UnityEngine.CoreModule
